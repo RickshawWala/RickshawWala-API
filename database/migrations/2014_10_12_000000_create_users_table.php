@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('email')->unique();
-            $table->integer('mobile_numer')->unsigned()->unique();
+            $table->bigInteger('mobile_number')->unsigned()->unique();
             $table->boolean('is_user')->default(false);
             $table->boolean('is_driver')->default(false);
             $table->string('password');
