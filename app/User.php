@@ -27,4 +27,22 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function isUser() {
+        return $this->is_user;
+    }
+
+    public function isDriver() {
+        return $this->is_driver;
+    }
+
+    public function userLocation()
+    {
+        return $this->hasOne('App\UserLocation');
+    }
+
+    public function driverDetails()
+    {
+        return $this->hasOne('App\DriverDetails');
+    }
 }
