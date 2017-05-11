@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'mobile_number', 'is_user', 'is_driver'
+        'name', 'email', 'password', 'mobile_number', 'is_client', 'is_driver'
     ];
 
     /**
@@ -28,8 +28,8 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function isUser() {
-        return $this->is_user;
+    public function isClient() {
+        return $this->is_client;
     }
 
     public function isDriver() {

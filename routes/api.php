@@ -18,20 +18,6 @@ Route::post('auth/token', 'Api\Auth\DefaultController@authenticate');
 Route::post('auth/refresh', 'Api\Auth\DefaultController@refreshToken');
 // from: https://web.archive.org/web/20170509132215/https://laracasts.com/discuss/channels/code-review/api-authentication-with-passport/replies/282168
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    $user = $request->user();
-
-    if ($user->isUser() && !$user->isDriver()) {
-        return $user::with(['userLocation'])->get();
-    } elseif ($user->isDriver() && !$user->isUser()) {
-        return $user::with(['userLocation','driverDetails'])->get();
-    } elseif ($user->isUser() && $user->isDriver()) {
-        return $user::with(['userLocation','driverDetails'])->get();
-    } else {
-        return $user;
-    }
-});
-
 Route::post('/register', function (Request $request) {
     try {
         App\User::create([
@@ -39,7 +25,7 @@ Route::post('/register', function (Request $request) {
             'email' => $request['email'],
             'mobile_number' => $request['mobile_number'],
             'password' => bcrypt($request['password']),
-            'is_user' => $request['is_user'],
+            'is_client' => $request['is_client'],
             'is_driver' => $request['is_driver'],
         ]);
         return response()->json([
@@ -50,4 +36,38 @@ Route::post('/register', function (Request $request) {
             'error' => 'Registration Failed',
         ]);
     }
+});
+
+Route::group(['middleware' => 'auth:api'], function () {
+
+    Route::get('/user', function (Request $request) {
+        $user = $request->user();
+
+        if ($user->isClient() && !$user->isDriver()) {
+            return $user::with(['userLocation'])->get();
+        } elseif ($user->isDriver() && !$user->isClient()) {
+            return $user::with(['userLocation','driverDetails'])->get();
+        } elseif ($user->isClient() && $user->isDriver()) {
+            return $user::with(['userLocation','driverDetails'])->get();
+        } else {
+            return $user;
+        }
+    });
+
+    Route::post('/location-update', function (Request $request) {
+        try {
+            App\UserLocation::updateOrCreate(
+                ['user_id' => $request->user()->id],
+                ['latitude' => $request->latitude, 'longitude' => $request->longitude]
+            );
+            return response()->json([
+                'success' => 'Location Updated',
+            ]);
+        } catch(Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'error' => 'Location Update Failed',
+            ]);
+        }
+    });
+
 });
