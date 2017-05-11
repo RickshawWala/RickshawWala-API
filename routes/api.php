@@ -31,3 +31,23 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
         return $user;
     }
 });
+
+Route::post('/register', function (Request $request) {
+    try {
+        App\User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'mobile_number' => $request['mobile_number'],
+            'password' => bcrypt($request['password']),
+            'is_user' => $request['is_user'],
+            'is_driver' => $request['is_driver'],
+        ]);
+        return response()->json([
+            'success' => 'Registration Successful',
+        ]);
+    } catch(Illuminate\Database\QueryException $e) {
+        return response()->json([
+            'error' => 'Registration Failed',
+        ]);
+    }
+});
