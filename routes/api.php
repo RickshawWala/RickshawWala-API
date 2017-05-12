@@ -20,14 +20,36 @@ Route::post('auth/refresh', 'Api\Auth\DefaultController@refreshToken');
 
 Route::post('/register', function (Request $request) {
     try {
-        App\User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'mobile_number' => $request['mobile_number'],
-            'password' => bcrypt($request['password']),
-            'is_client' => $request['is_client'],
-            'is_driver' => $request['is_driver'],
-        ]);
+        if($request['isClient'] == 'true') {
+            App\User::create([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'mobile_number' => $request['mobile_number'],
+                'password' => bcrypt($request['password']),
+                'is_client' => $request['is_client'],
+            ]);
+        }
+        else if($request['isDriver'] == 'true') {
+            $user = App\User::create([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'mobile_number' => $request['mobile_number'],
+                'password' => bcrypt($request['password']),
+                'is_driver' => $request['is_driver'],
+            ]);
+            $driver_details = new App\DriverDetails([
+                'licence_number' => $request['licence_number'],
+                'vehicle_registration_number' => $request['vehicle_registration_number']
+            ]);
+            $user->DriverDetails()->save($driver_details);
+        } else {
+            App\User::create([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'mobile_number' => $request['mobile_number'],
+                'password' => bcrypt($request['password']),
+            ]);
+        }
         return response()->json([
             'success' => 'Registration Successful',
         ]);
