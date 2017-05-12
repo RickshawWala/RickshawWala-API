@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,20 @@ Route::post('auth/refresh', 'Api\Auth\DefaultController@refreshToken');
 // from: https://web.archive.org/web/20170509132215/https://laracasts.com/discuss/channels/code-review/api-authentication-with-passport/replies/282168
 
 Route::post('/register', function (Request $request) {
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'mobile_number' => 'required|numeric|digits:10|unique:users',
+        'password' => 'required|string|min:6',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'error' => 'Registration Failed',
+            'fields' => $validator->messages()
+        ]);
+    }
+
     try {
         if($request['isClient'] == 'true') {
             App\User::create([
