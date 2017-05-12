@@ -54,9 +54,15 @@ Route::post('/register', function (Request $request) {
             'success' => 'Registration Successful',
         ]);
     } catch(Illuminate\Database\QueryException $e) {
-        return response()->json([
-            'error' => 'Registration Failed',
-        ]);
+        if(Config::get('app.debug')) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'Registration Failed',
+            ]);
+        }
     }
 });
 
