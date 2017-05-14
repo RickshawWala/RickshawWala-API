@@ -84,16 +84,16 @@ Route::post('/register', function (Request $request) {
 Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('/user', function (Request $request) {
-        $user = $request->user();
+        $user = Auth::user(); // can also be $request->user()
 
         if ($user->isClient() && !$user->isDriver()) {
-            return $user::with(['userLocation'])->get();
+            return App\User::with(['userLocation'])->find($user->id);
         } elseif ($user->isDriver() && !$user->isClient()) {
-            return $user::with(['userLocation','driverDetails'])->get();
+            return App\User::with(['userLocation','driverDetails'])->find($user->id);
         } elseif ($user->isClient() && $user->isDriver()) {
-            return $user::with(['userLocation','driverDetails'])->get();
+            return App\User::with(['userLocation','driverDetails'])->find($user->id);
         } else {
-            return $user::with(['userLocation']);
+            return App\User::with(['userLocation'])->find($user->id);
         }
     });
 
