@@ -35,7 +35,7 @@ Route::post('/register', function (Request $request) {
     }
 
     try {
-        if($request['isClient'] == 'true') {
+        if($request['is_client'] == 'true') {
             App\User::create([
                 'name' => $request['name'],
                 'email' => $request['email'],
@@ -44,7 +44,7 @@ Route::post('/register', function (Request $request) {
                 'is_client' => $request['is_client'],
             ]);
         }
-        else if($request['isDriver'] == 'true') {
+        else if($request['is_driver'] == 'true') {
             $user = App\User::create([
                 'name' => $request['name'],
                 'email' => $request['email'],
@@ -93,7 +93,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         } elseif ($user->isClient() && $user->isDriver()) {
             return $user::with(['userLocation','driverDetails'])->get();
         } else {
-            return $user;
+            return $user::with(['userLocation']);
         }
     });
 
