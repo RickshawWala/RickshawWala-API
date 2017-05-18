@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 class DefaultController extends Controller
 {
@@ -28,6 +29,16 @@ class DefaultController extends Controller
      */
     protected function authenticate(Request $request)
     {
+        // for when a is_client or is_driver parameter exists in the request, to
+        // prevent a client from logging into a driver's account and vice versa
+        if(Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
+            if($request->is_driver == "true" && !Auth::user()->is_driver) {
+                return response()->json(['error' => 'invalid_credentials', 'message' => 'The user credentials were incorrect.'], 401);
+            } else if($request->is_client == "true" && !Auth::user()->is_client) {
+                return response()->json(['error' => 'invalid_credentials', 'message' => 'The user credentials were incorrect.'], 401);
+            }
+        }
+
         $request->request->add([
             'username' => $request->username,
             'password' => $request->password,
