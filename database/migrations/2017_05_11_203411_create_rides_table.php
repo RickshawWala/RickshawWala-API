@@ -16,7 +16,7 @@ class CreateRidesTable extends Migration
         Schema::create('rides', function (Blueprint $table) {
             $table->increments('id');
             $table->string('status')->default('created'); // possible values: created, cancelled, accepted, payment_pending, payment_completed
-            $table->string('client_user_id')->unsigned();
+            $table->integer('client_user_id')->unsigned();
             $table->integer('driver_user_id')->unsigned()->nullable();
             $table->double('origin_latitude');
             $table->double('origin_longitude');

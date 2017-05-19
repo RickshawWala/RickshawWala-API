@@ -152,6 +152,33 @@ Route::group(['middleware' => 'auth:api'], function () {
         return App\Ride::where('client_user_id', Auth::id())->with('driver')->orderBy('updated_at', 'desc')->first();
     });
 
+    Route::get('/ride/named-locations', function (Request $request) {
+        $ride = App\Ride::where('client_user_id', Auth::id())->orderBy('updated_at', 'desc')->first();
+
+        $origLat = $ride->origin_latitude;
+        $origLong = $ride->origin_longitude;
+        $destLat = $ride->destination_latitude;
+        $destLong = $ride->destination_longitude;
+
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origLat},{$origLong}&destinations={$destLat},{$destLong}";
+
+        $json = json_decode(file_get_contents($url), true);
+
+        $status = $json['rows'][0]['elements'][0]['status'];
+        if($status == "ZERO_RESULTS") {
+            return response()->json([
+                'error' => 'Location names could not be found',
+            ]);
+        } else if ($status == "OK") {
+            $originName = $json['origin_addresses'];
+            $destinationName = $json['destination_addresses'];
+            return response()->json([
+                'origin' => $originName,
+                'destination' => $destinationName
+            ]);
+        }
+    });
+
     Route::get('/created-rides', function (Request $request) {
         return App\Ride::where('status', 'created')->with('client')->get();
     });
