@@ -132,6 +132,22 @@ Route::group(['middleware' => 'auth:api'], function () {
         }
     });
 
+    Route::post('/ride/update', function (Request $request) {
+        try {
+            $ride = App\Ride::find($request->id);
+            $ride->driver_user_id = Auth::id();
+            $ride->status = $request->status;
+            $ride->save();
+            return response()->json([
+                'success' => 'Ride Updated',
+            ]);
+        } catch(Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'error' => 'Ride Update Failed',
+            ]);
+        }
+    });
+
     Route::get('/created-rides', function (Request $request) {
         return App\Ride::where('status', 'created')->with('client')->get();
     });
