@@ -148,6 +148,10 @@ Route::group(['middleware' => 'auth:api'], function () {
         }
     });
 
+    Route::get('/ride/status', function (Request $request) {
+        return App\Ride::where('client_user_id', Auth::id())->with('driver')->first();
+    });
+
     Route::get('/created-rides', function (Request $request) {
         return App\Ride::where('status', 'created')->with('client')->get();
     });

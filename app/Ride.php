@@ -32,4 +32,12 @@ class Ride extends Model
         return $this->belongsTo('App\User', 'client_user_id');
     }
 
+    /**
+     * Get the driver user that accepted the ride.
+     */
+    public function driver()
+    {
+        return $this->belongsTo('App\User', 'driver_user_id');
+    }
+
 }
