@@ -132,4 +132,8 @@ Route::group(['middleware' => 'auth:api'], function () {
         }
     });
 
+    Route::get('/created-rides', function (Request $request) {
+        return App\Ride::where('status', 'created')->with('client')->get();
+    });
+
 });

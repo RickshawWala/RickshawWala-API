@@ -23,4 +23,13 @@ class Ride extends Model
     protected $hidden = [
         'client_user_id', 'driver_user_id'
     ];
+
+    /**
+     * Get the client user that created the ride.
+     */
+    public function client()
+    {
+        return $this->belongsTo('App\User', 'client_user_id');
+    }
+
 }

@@ -23,6 +23,10 @@ class CreateRidesTable extends Migration
             $table->double('destination_latitude');
             $table->double('destination_longitude');
             $table->float('fare')->nullable();
+            $table->foreign('client_user_id')
+                  ->references('id')->on('users');
+            $table->foreign('driver_user_id')
+                  ->references('id')->on('users');
             $table->timestamps();
         });
     }
