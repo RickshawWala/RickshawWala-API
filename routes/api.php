@@ -113,4 +113,23 @@ Route::group(['middleware' => 'auth:api'], function () {
         }
     });
 
+    Route::post('/ride/create', function (Request $request) {
+        try {
+            App\Ride::create([
+                'client_user_id' => Auth::id(),
+                'origin_latitude' => $request->origin_latitude,
+                'origin_longitude' => $request->origin_longitude,
+                'destination_latitude' => $request->destination_latitude,
+                'destination_longitude' => $request->destination_longitude,
+            ]);
+            return response()->json([
+                'success' => 'Ride Created',
+            ]);
+        } catch(Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'error' => 'Ride Creation Failed',
+            ]);
+        }
+    });
+
 });

@@ -12,7 +12,7 @@ class Ride extends Model
      * @var array
      */
     protected $fillable = [
-        'status', 'client_user_id', 'driver_user_id', 'destination_latitude', 'destination_longitude', 'fare'
+        'status', 'client_user_id', 'driver_user_id', 'origin_latitude', 'origin_longitude', 'destination_latitude', 'destination_longitude', 'fare'
     ];
 
     /**
