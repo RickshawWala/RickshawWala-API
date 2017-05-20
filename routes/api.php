@@ -121,6 +121,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 'origin_longitude' => $request->origin_longitude,
                 'destination_latitude' => $request->destination_latitude,
                 'destination_longitude' => $request->destination_longitude,
+                'fare' => getFare($request->origin_latitude, $request->origin_longitude, $request->destination_latitude, $request->destination_longitude)
             ]);
             return response()->json([
                 'success' => 'Ride Created',
@@ -184,3 +185,25 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
 });
+
+function getFare($origLat, $origLong, $destLat, $destLong) {
+    $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origLat},{$origLong}&destinations={$destLat},{$destLong}";
+
+    $json = json_decode(file_get_contents($url), true);
+
+    $elements = $json['rows'][0]['elements'][0];
+    $status = $elements['status'];
+
+    if($status == "ZERO_RESULTS") {
+        return null;
+    } else if ($status == "OK") {
+        $distance = $elements['distance']['value'];
+        $distance = $distance/1000; // Convert meters to kms
+        if($distance <= 1.5) {
+            $fare = 25;
+        } else {
+            $fare = 25 + ($distance-1.5) * 13;
+        }
+        return $fare;
+    }
+}
